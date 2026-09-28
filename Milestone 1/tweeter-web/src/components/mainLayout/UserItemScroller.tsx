@@ -1,20 +1,26 @@
-import { useContext } from "react";
-import {
-  UserInfoContext,
-  UserInfoActionsContext,
-} from "../userInfo/UserInfoContexts";
 import { useState, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { AuthToken, FakeData, User } from "tweeter-shared";
-import { ToastActionsContext } from "../toaster/ToastContexts";
 import { useParams } from "react-router-dom";
-import { ToastType } from "../toaster/Toast";
 import UserItem from "../userItem/UserItem";
+import { useMessageActions } from "../toaster/MessageHooks";
+import { useUserInfo, useUserInfoActions } from "../userInfo/UserInfoHooks";
 
 export const PAGE_SIZE = 10;
 
-const FolloweesScroller = () => {
-  const { displayToast } = useContext(ToastActionsContext);
+interface Props {
+  itemDescription: string;
+  featureUrl: string;
+  loadMore: (
+    authToken: AuthToken,
+    userAlias: string,
+    pageSize: number,
+    lastItem: User | null,
+  ) => Promise<[User[], boolean]>;
+}
+
+const UserItemScroller = (props: Props) => {
+  const { displayErrorMessage } = useMessageActions();
   const [items, setItems] = useState<User[]>([]);
   const [hasMoreItems, setHasMoreItems] = useState(true);
   const [lastItem, setLastItem] = useState<User | null>(null);
@@ -22,8 +28,8 @@ const FolloweesScroller = () => {
   const addItems = (newItems: User[]) =>
     setItems((previousItems) => [...previousItems, ...newItems]);
 
-  const { displayedUser, authToken } = useContext(UserInfoContext);
-  const { setDisplayedUser } = useContext(UserInfoActionsContext);
+  const { displayedUser, authToken } = useUserInfo();
+  const { setDisplayedUser } = useUserInfoActions();
   const { displayedUser: displayedUserAliasParam } = useParams();
 
   // Update the displayed user context variable whenever the displayedUser url parameter changes. This allows browser forward and back buttons to work correctly.
@@ -55,7 +61,7 @@ const FolloweesScroller = () => {
 
   const loadMoreItems = async (lastItem: User | null) => {
     try {
-      const [newItems, hasMore] = await loadMoreFollowees(
+      const [newItems, hasMore] = await props.loadMore(
         authToken!,
         displayedUser!.alias,
         PAGE_SIZE,
@@ -66,22 +72,10 @@ const FolloweesScroller = () => {
       setLastItem(() => newItems[newItems.length - 1]);
       addItems(newItems);
     } catch (error) {
-      displayToast(
-        ToastType.Error,
-        `Failed to load followees because of exception: ${error}`,
-        0,
+      displayErrorMessage(
+        `Failed to load ${props.itemDescription} because of exception: ${error}`,
       );
     }
-  };
-
-  const loadMoreFollowees = async (
-    authToken: AuthToken,
-    userAlias: string,
-    pageSize: number,
-    lastFollowee: User | null,
-  ): Promise<[User[], boolean]> => {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.getPageOfUsers(lastFollowee, pageSize, userAlias);
   };
 
   const getUser = async (
@@ -106,7 +100,7 @@ const FolloweesScroller = () => {
             key={index}
             className="row mb-3 mx-0 px-0 border rounded bg-white"
           >
-            <UserItem user={item} featurePath="/followees" />
+            <UserItem user={item} featurePath={props.featureUrl} />
           </div>
         ))}
       </InfiniteScroll>
@@ -114,4 +108,4 @@ const FolloweesScroller = () => {
   );
 };
 
-export default FolloweesScroller;
+export default UserItemScroller;
