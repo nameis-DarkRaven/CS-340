@@ -1,8 +1,3 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import { useContext } from "react";
-import { ToastActionsContext } from "../toaster/ToastContexts";
-import { ToastType } from "../toaster/Toast";
 import OAuth from "./OAuth";
 
 interface Props {
@@ -18,18 +13,6 @@ interface Props {
 }
 
 const AuthenticationFormLayout = (props: Props) => {
-  const { displayToast } = useContext(ToastActionsContext);
-
-  const displayInfoMessageWithDarkBackground = (message: string): void => {
-    displayToast(
-      ToastType.Info,
-      message,
-      3000,
-      undefined,
-      "text-white bg-primary",
-    );
-  };
-
   return (
     <div className="center">
       <div className="form-main w-100 m-auto rounded">
@@ -47,8 +30,13 @@ const AuthenticationFormLayout = (props: Props) => {
 
           <h1 className="h4 mb-3 fw-normal">Or</h1>
           <h1 className="h5 mb-3 fw-normal">{props.oAuthHeading}</h1>
-
-          <OAuth />
+          <div className="text-center mb-3">
+            <OAuth platform="Google" />
+            <OAuth platform="Facebook" />
+            <OAuth platform="Twitter" />
+            <OAuth platform="LinkedIn" />
+            <OAuth platform="GitHub" />
+          </div>
 
           <div className="checkbox mb-3">
             <label>
