@@ -1,4 +1,3 @@
-import * as fs from "fs";
 import { TemplateMethod } from "./TemplateMethod";
 
 class LineCount extends TemplateMethod {
@@ -21,29 +20,14 @@ class LineCount extends TemplateMethod {
     lineCount.run();
   }
 
-  constructor(dirName: string, filePattern: string, recurse: boolean = false) {
-    super(dirName, filePattern, recurse);
+  protected lines(filePath: string, lines: string[]): number {
+    const count = lines.length;
+    this.totalLineCount += count;
+    return count;
   }
 
-  protected async processFile(filePath: string): Promise<void> {
-    if (this.fileRegExp.test(filePath)) {
-      let currentLineCount = 0;
-
-      try {
-        const fileContent: string = await fs.promises.readFile(
-          filePath,
-          "utf-8",
-        );
-
-        const lines: string[] = fileContent.split(/\r?\n/);
-        currentLineCount = lines.length;
-        this.totalLineCount += currentLineCount;
-      } catch (error) {
-        this.unreadableFile(filePath);
-      } finally {
-        console.log(`${currentLineCount} ${filePath}`);
-      }
-    }
+  protected afterFile(count: number, filePath: string): void {
+    console.log(`${count} ${filePath}`);
   }
 
   protected log(): void {

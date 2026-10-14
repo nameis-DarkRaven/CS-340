@@ -6,8 +6,6 @@ export abstract class TemplateMethod {
   protected fileRegExp: RegExp;
   protected recurse: boolean;
 
-  public static main(): void {}
-
   public constructor(
     dirName: string,
     filePattern: string,
@@ -38,7 +36,11 @@ export abstract class TemplateMethod {
       const fullPath = path.join(filePath, file);
       if (this.isFile(fullPath)) {
         if (this.isReadable(fullPath)) {
-          await this.processFile(fullPath);
+          await this.processFile(
+            fullPath,
+            this.lines.bind(this),
+            this.afterFile.bind(this),
+          );
         } else {
           this.unreadableFile(fullPath);
         }
@@ -55,9 +57,35 @@ export abstract class TemplateMethod {
     }
   }
 
-  protected async processFile(filePath: string) {}
+  protected async processFile(
+    filePath: string,
+    processLines: (filePath: string, lines: string[]) => number,
+    afterFile: (count: number, filePath: string) => void,
+  ): Promise<void> {
+    if (this.fileRegExp.test(filePath)) {
+      let count = 0;
 
-  protected log(): void {}
+      try {
+        const fileContent: string = await fs.promises.readFile(
+          filePath,
+          "utf-8",
+        );
+
+        const lines: string[] = fileContent.split(/\r?\n/);
+        count = processLines(filePath, lines);
+      } catch (error) {
+        this.unreadableFile(filePath);
+      } finally {
+        afterFile(count, filePath);
+      }
+    }
+  }
+
+  protected abstract lines(filePath: string, lines: string[]): number;
+
+  protected abstract afterFile(count: number, filePath: string): void;
+
+  protected abstract log(): void;
 
   private isDirectory(path: string): boolean {
     try {

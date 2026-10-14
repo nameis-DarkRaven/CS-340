@@ -1,4 +1,3 @@
-import * as fs from "fs";
 import { TemplateMethod } from "./TemplateMethod";
 
 class FileSearch extends TemplateMethod {
@@ -42,34 +41,25 @@ class FileSearch extends TemplateMethod {
     this.searchRegExp = new RegExp(searchPattern);
   }
 
-  protected async processFile(filePath: string): Promise<void> {
-    let currentMatchCount = 0;
+  protected lines(filePath: string, lines: string[]): number {
+    let count = 0;
 
-    if (this.fileRegExp.test(filePath)) {
-      try {
-        const fileContent: string = await fs.promises.readFile(
-          filePath,
-          "utf-8",
-        );
-        const lines: string[] = fileContent.split(/\r?\n/);
-
-        lines.forEach((line) => {
-          if (this.searchRegExp.test(line)) {
-            if (++currentMatchCount == 1) {
-              console.log(`\nFILE: ${filePath}`);
-            }
-
-            console.log(line);
-            this.totalMatches++;
-          }
-        });
-      } catch (error) {
-        this.unreadableFile(filePath);
-      } finally {
-        if (currentMatchCount > 0) {
-          console.log(`MATCHES: ${currentMatchCount}`);
+    lines.forEach((line) => {
+      if (this.searchRegExp.test(line)) {
+        if (++count == 1) {
+          console.log(`\nFILE: ${filePath}`);
         }
+
+        console.log(line);
+        this.totalMatches++;
       }
+    });
+    return count;
+  }
+
+  protected afterFile(count: number, filePath: string): void {
+    if (count > 0) {
+      console.log(`MATCHES: ${count}`);
     }
   }
 
