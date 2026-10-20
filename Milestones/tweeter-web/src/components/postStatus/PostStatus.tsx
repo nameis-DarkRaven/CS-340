@@ -8,6 +8,7 @@ import {
 import { useRef, useState } from "react";
 
 const PostStatus = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [post, setPost] = useState("");
   const { displayInfoMessage, displayErrorMessage, deleteMessage } =
     useMessageActions();
@@ -19,6 +20,7 @@ const PostStatus = () => {
     displayInfoMessage: displayInfoMessage,
     deleteMessage: deleteMessage,
     setPost: setPost,
+    setIsLoading: setIsLoading,
   };
   const presenterRef = useRef<PostStatusPresenter | null>(null);
   if (!presenterRef.current) {
@@ -57,7 +59,7 @@ const PostStatus = () => {
             )
           }
         >
-          {presenterRef.current!.IsLoading ? (
+          {isLoading ? (
             <span
               className="spinner-border spinner-border-sm"
               role="status"

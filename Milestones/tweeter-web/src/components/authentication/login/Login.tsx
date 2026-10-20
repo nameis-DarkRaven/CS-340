@@ -13,6 +13,7 @@ interface Props {
 }
 
 const Login = (props: Props) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [alias, setAlias] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ const Login = (props: Props) => {
     displayErrorMessage: displayErrorMessage,
     navigate: navigate,
     updateUserInfo: updateUserInfo,
+    setIsLoading: setIsLoading,
   };
 
   const presenterRef = useRef<LoginPresenter | null>(null);
@@ -66,7 +68,7 @@ const Login = (props: Props) => {
       submitButtonDisabled={() =>
         presenterRef.current!.checkSubmitButtonStatus(alias, password)
       }
-      isLoading={presenterRef.current!.IsLoading}
+      isLoading={isLoading}
       submit={() => presenterRef.current!.doLogin(props, alias, password)}
     />
   );
