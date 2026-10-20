@@ -1,5 +1,5 @@
 cd tweeter-shared
-npm build
+npm run build
 cd ../tweeter-web
-npm build
+npm run build
 npm start
