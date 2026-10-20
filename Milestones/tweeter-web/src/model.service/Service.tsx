@@ -1,1 +1,1 @@
-interface Service {}
+export interface Service {}
