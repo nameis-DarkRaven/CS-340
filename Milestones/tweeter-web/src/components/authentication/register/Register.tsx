@@ -10,6 +10,7 @@ import {
   RegisterPresenter,
   RegisterView,
 } from "../../../presenter/RegisterPresenter";
+import { RegistrationFormData } from "../../../presenter/AuthPresenter";
 
 const Register = () => {
   const [firstName, setFirstName] = useState("");
@@ -18,6 +19,13 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const formData: RegistrationFormData = {
+    firstName,
+    lastName,
+    alias,
+    password,
+    imageUrl,
+  };
 
   const navigate = useNavigate();
   const { updateUserInfo } = useUserInfoActions();
@@ -47,14 +55,7 @@ const Register = () => {
             id="firstNameInput"
             placeholder="First Name"
             onKeyDown={(event) =>
-              presenterRef.current!.registerOnEnter(
-                event,
-                firstName,
-                lastName,
-                alias,
-                password,
-                imageUrl,
-              )
+              presenterRef.current!.registerOnEnter(event, formData)
             }
             onChange={(event) => setFirstName(event.target.value)}
           />
@@ -68,14 +69,7 @@ const Register = () => {
             id="lastNameInput"
             placeholder="Last Name"
             onKeyDown={(event) =>
-              presenterRef.current!.registerOnEnter(
-                event,
-                firstName,
-                lastName,
-                alias,
-                password,
-                imageUrl,
-              )
+              presenterRef.current!.registerOnEnter(event, formData)
             }
             onChange={(event) => setLastName(event.target.value)}
           />
@@ -83,14 +77,7 @@ const Register = () => {
         </div>
         <AuthenticationFields
           actionOnEnter={(event) =>
-            presenterRef.current!.registerOnEnter(
-              event,
-              firstName,
-              lastName,
-              alias,
-              password,
-              imageUrl,
-            )
+            presenterRef.current!.registerOnEnter(event, formData)
           }
           setAlias={(alias) => setAlias(alias)}
           setPassword={(password) => setPassword(password)}
@@ -101,14 +88,7 @@ const Register = () => {
             className="d-inline-block py-5 px-4 form-control bottom"
             id="imageFileInput"
             onKeyDown={(event) =>
-              presenterRef.current!.registerOnEnter(
-                event,
-                firstName,
-                lastName,
-                alias,
-                password,
-                imageUrl,
-              )
+              presenterRef.current!.registerOnEnter(event, formData)
             }
             onChange={(event) => presenterRef.current!.handleFileChange(event)}
           />
@@ -142,18 +122,10 @@ const Register = () => {
         (presenterRef.current!.RememberMe = rememberMe)
       }
       submitButtonDisabled={() =>
-        presenterRef.current!.checkSubmitButtonStatus(
-          firstName,
-          lastName,
-          alias,
-          password,
-          imageUrl,
-        )
+        presenterRef.current!.checkSubmitButtonStatus(formData)
       }
       isLoading={isLoading}
-      submit={() =>
-        presenterRef.current!.doRegister(firstName, lastName, alias, password)
-      }
+      submit={() => presenterRef.current!.doRegister(formData)}
     />
   );
 };

@@ -1,7 +1,7 @@
 import { Buffer } from "buffer";
 import { ChangeEvent } from "react";
 import { UserService } from "../model.service/UserService";
-import { AuthPresenter, AuthView } from "./AuthPresenter";
+import { AuthPresenter, AuthView, RegistrationFormData } from "./AuthPresenter";
 
 export interface RegisterView extends AuthView {
   setImageUrl: (imageUrl: string) => void;
@@ -12,45 +12,26 @@ export class RegisterPresenter extends AuthPresenter<RegisterView> {
   private imageBytes: Uint8Array = new Uint8Array();
   private imageFileExtension: string = "";
 
-  public checkSubmitButtonStatus(
-    firstName: string,
-    lastName: string,
-    alias: string,
-    password: string,
-    imageUrl: string,
-  ): boolean {
+  public checkSubmitButtonStatus(formData: RegistrationFormData): boolean {
     return (
-      !firstName ||
-      !lastName ||
-      !alias ||
-      !password ||
-      !imageUrl ||
+      !formData.firstName ||
+      !formData.lastName ||
+      !formData.alias ||
+      !formData.password ||
+      !formData.imageUrl ||
       !this.imageFileExtension
     );
   }
 
   public registerOnEnter(
     event: React.KeyboardEvent<HTMLElement>,
-    firstName: string,
-    lastName: string,
-    alias: string,
-    password: string,
-    imageUrl: string,
+    formData: RegistrationFormData,
   ) {
-    if (
-      event.key == "Enter" &&
-      !this.checkSubmitButtonStatus(
-        firstName,
-        lastName,
-        alias,
-        password,
-        imageUrl,
-      )
-    ) {
-      {
-        this.doRegister(firstName, lastName, alias, password);
-      }
-    }
+    this.doOperationOnEnter(
+      event,
+      () => this.doRegister(formData),
+      () => this.checkSubmitButtonStatus(formData),
+    );
   }
 
   public handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -78,19 +59,14 @@ export class RegisterPresenter extends AuthPresenter<RegisterView> {
     if (fileExtension) this.imageFileExtension = fileExtension;
   }
 
-  public async doRegister(
-    firstName: string,
-    lastName: string,
-    alias: string,
-    password: string,
-  ) {
+  public async doRegister(formData: RegistrationFormData) {
     this.handleAuthOperation(
       () =>
         this.service.register(
-          firstName,
-          lastName,
-          alias,
-          password,
+          formData.firstName,
+          formData.lastName,
+          formData.alias,
+          formData.password,
           this.imageBytes,
           this.imageFileExtension,
         ),

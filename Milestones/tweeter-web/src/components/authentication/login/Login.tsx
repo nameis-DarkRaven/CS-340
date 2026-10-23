@@ -5,8 +5,12 @@ import AuthenticationFormLayout from "../AuthenticationFormLayout";
 import AuthenticationFields from "../AuthenticationFields";
 import { useMessageActions } from "../../toaster/MessageHooks";
 import { useUserInfoActions } from "../../userInfo/UserInfoHooks";
-import { LoginPresenter, LoginView } from "../../../presenter/LoginPresenter";
+import { LoginPresenter } from "../../../presenter/LoginPresenter";
 import { useRef, useState } from "react";
+import {
+  AuthView,
+  LoginFormData,
+} from "../../../presenter/AuthPresenter";
 
 interface Props {
   originalUrl?: string;
@@ -16,11 +20,16 @@ const Login = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [alias, setAlias] = useState("");
   const [password, setPassword] = useState("");
+  const formData: LoginFormData = {
+    alias,
+    password,
+    originalUrl: props.originalUrl,
+  };
   const navigate = useNavigate();
   const { updateUserInfo } = useUserInfoActions();
   const { displayErrorMessage } = useMessageActions();
 
-  const observer: LoginView = {
+  const observer: AuthView = {
     displayErrorMessage: displayErrorMessage,
     navigate: navigate,
     updateUserInfo: updateUserInfo,
@@ -38,7 +47,7 @@ const Login = (props: Props) => {
         <AuthenticationFields
           originalUrl={props.originalUrl}
           actionOnEnter={(event) =>
-            presenterRef.current!.loginOnEnter(event, props, alias, password)
+            presenterRef.current!.loginOnEnter(event, formData)
           }
           setAlias={setAlias}
           setPassword={setPassword}
@@ -66,10 +75,10 @@ const Login = (props: Props) => {
         (presenterRef.current!.RememberMe = rememberMe)
       }
       submitButtonDisabled={() =>
-        presenterRef.current!.checkSubmitButtonStatus(alias, password)
+        presenterRef.current!.checkSubmitButtonStatus(formData)
       }
       isLoading={isLoading}
-      submit={() => presenterRef.current!.doLogin(props, alias, password)}
+      submit={() => presenterRef.current!.doLogin(formData)}
     />
   );
 };

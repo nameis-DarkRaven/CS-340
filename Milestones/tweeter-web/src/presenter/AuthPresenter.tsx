@@ -12,6 +12,21 @@ export interface AuthView extends View {
   setIsLoading: (isLoading: boolean) => void;
 }
 
+export interface AuthCredentials {
+  alias: string;
+  password: string;
+}
+
+export interface LoginFormData extends AuthCredentials {
+  originalUrl?: string;
+}
+
+export interface RegistrationFormData extends AuthCredentials {
+  firstName: string;
+  lastName: string;
+  imageUrl: string;
+}
+
 export abstract class AuthPresenter<V extends AuthView> extends Presenter<V> {
   protected rememberMe: boolean = false;
 
@@ -32,6 +47,16 @@ export abstract class AuthPresenter<V extends AuthView> extends Presenter<V> {
       description,
       () => this.view.setIsLoading(false),
     );
+  }
+
+  protected async doOperationOnEnter(
+    event: React.KeyboardEvent<HTMLElement>,
+    operation: () => Promise<void>,
+    checkSubmitButtonStatus: () => boolean,
+  ) {
+    if (event.key == "Enter" && !checkSubmitButtonStatus()) {
+      await operation();
+    }
   }
 
   public set RememberMe(value: boolean) {

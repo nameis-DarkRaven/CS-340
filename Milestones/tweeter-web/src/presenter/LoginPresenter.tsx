@@ -1,40 +1,33 @@
 import { UserService } from "../model.service/UserService";
-import { AuthView, AuthPresenter } from "./AuthPresenter";
+import {
+  AuthView,
+  AuthPresenter,
+  LoginFormData,
+} from "./AuthPresenter";
 
-export interface LoginView extends AuthView {
-  displayErrorMessage: (message: string) => void;
-}
-
-export class LoginPresenter extends AuthPresenter<LoginView> {
+export class LoginPresenter extends AuthPresenter<AuthView> {
   private userService: UserService = new UserService();
 
-  public async doLogin(
-    props: { originalUrl?: string },
-    alias: string,
-    password: string,
-  ) {
+  public async doLogin(formData: LoginFormData) {
     this.handleAuthOperation(
-      () => this.userService.login(alias, password),
+      () => this.userService.login(formData.alias, formData.password),
       "log user in",
-      (user) => props.originalUrl ?? `/feed/${user.alias}`,
+      (user) => formData.originalUrl ?? `/feed/${user.alias}`,
     );
-  }
-
-  public checkSubmitButtonStatus(alias: string, password: string): boolean {
-    return !alias || !password;
   }
 
   public loginOnEnter(
     event: React.KeyboardEvent<HTMLElement>,
-    props: { originalUrl?: string },
-    alias: string,
-    password: string,
+    formData: LoginFormData,
   ) {
-    if (
-      event.key == "Enter" &&
-      !this.checkSubmitButtonStatus(alias, password)
-    ) {
-      this.doLogin(props, alias, password);
-    }
+    this.doOperationOnEnter(
+      event,
+      () => this.doLogin(formData),
+      () => this.checkSubmitButtonStatus(formData),
+    );
+  }
+
+  public checkSubmitButtonStatus(formData: LoginFormData): boolean {
+    return !formData.alias || !formData.password;
   }
 }
