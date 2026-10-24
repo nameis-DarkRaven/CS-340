@@ -1,0 +1,4 @@
+{
+  "jest.rootPath": "tweeter-web",
+  "jest.jestCommandLine": "npm test --"
+}
