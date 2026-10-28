@@ -8,11 +8,11 @@ export interface PostStatusView extends MessageView {
 }
 
 export class PostStatusPresenter extends Presenter<PostStatusView> {
-  private service: StatusService;
+  private _service: StatusService;
 
   public constructor(view: PostStatusView) {
     super(view);
-    this.service = new StatusService();
+    this._service = new StatusService();
   }
 
   public async submitPost(
@@ -61,5 +61,9 @@ export class PostStatusPresenter extends Presenter<PostStatusView> {
     post: string,
   ): boolean {
     return !post.trim() || !authToken || !currentUser;
+  }
+
+  public get service(): StatusService {
+    return this._service;
   }
 }
