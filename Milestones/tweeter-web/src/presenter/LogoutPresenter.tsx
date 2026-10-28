@@ -18,7 +18,7 @@ export class LogoutPresenter extends Presenter<LogoutView> {
   public async logOut(authToken: AuthToken) {
     const loggingOutToastId = this.view.displayInfoMessage("Logging Out...", 0);
 
-    this.doFailureReportingOperation(async () => {
+    await this.doFailureReportingOperation(async () => {
       await this.service.logout(authToken!);
 
       this.view.deleteMessage(loggingOutToastId);

@@ -35,7 +35,7 @@ export abstract class AuthPresenter<V extends AuthView> extends Presenter<V> {
     description: string,
     getRedirectPath: (user: User) => string,
   ) {
-    this.doFailureReportingOperation(
+    await this.doFailureReportingOperation(
       async () => {
         this.view.setIsLoading(true);
 

@@ -33,7 +33,7 @@ export class NavigationPresenter extends Presenter<NavigationView> {
     authToken: AuthToken,
     displayedUser: User,
   ): Promise<void> {
-    this.doFailureReportingOperation(async () => {
+    await this.doFailureReportingOperation(async () => {
       const alias = this.extractAlias(event.target.toString());
       const toUser = await this.getUser(authToken!, alias);
 

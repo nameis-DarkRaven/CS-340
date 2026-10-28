@@ -27,7 +27,7 @@ export class UserInfoPresenter extends Presenter<UserInfoView> {
     currentUser: User,
     displayedUser: User,
   ) {
-    this.doFailureReportingOperation(async () => {
+    await this.doFailureReportingOperation(async () => {
       if (currentUser === displayedUser) {
         this.isFollower = false;
       } else {
@@ -67,7 +67,7 @@ export class UserInfoPresenter extends Presenter<UserInfoView> {
   }
 
   public async setNumbFollowees(authToken: AuthToken, displayedUser: User) {
-    this.doFailureReportingOperation(async () => {
+    await this.doFailureReportingOperation(async () => {
       this.followeeCount = await this.getFolloweeCount(
         authToken,
         displayedUser,
@@ -76,7 +76,7 @@ export class UserInfoPresenter extends Presenter<UserInfoView> {
   }
 
   public async setNumbFollowers(authToken: AuthToken, displayedUser: User) {
-    this.doFailureReportingOperation(async () => {
+    await this.doFailureReportingOperation(async () => {
       this.followerCount = await this.getFollowerCount(
         authToken,
         displayedUser,
