@@ -7,13 +7,11 @@ import { useMessageActions } from "../../toaster/MessageHooks";
 import { useUserInfoActions } from "../../userInfo/UserInfoHooks";
 import { LoginPresenter } from "../../../presenter/LoginPresenter";
 import { useRef, useState } from "react";
-import {
-  AuthView,
-  LoginFormData,
-} from "../../../presenter/AuthPresenter";
+import { AuthView, LoginFormData } from "../../../presenter/AuthPresenter";
 
 interface Props {
   originalUrl?: string;
+  presenter?: LoginPresenter;
 }
 
 const Login = (props: Props) => {
@@ -38,7 +36,7 @@ const Login = (props: Props) => {
 
   const presenterRef = useRef<LoginPresenter | null>(null);
   if (!presenterRef.current) {
-    presenterRef.current = new LoginPresenter(observer);
+    presenterRef.current = props.presenter ?? new LoginPresenter(observer);
   }
 
   const inputFieldFactory = () => {
